@@ -5,8 +5,6 @@
 namespace WpfLibrary.ControlSet
 {
     using System;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Windows;
@@ -19,43 +17,29 @@ namespace WpfLibrary.ControlSet
     /// <summary>
     /// The keyring control; generates a key from a password and keyfiles.
     /// </summary>
+    [TemplatePart(Name = PasswordPartName, Type = typeof(PasswordBox))]
+    [TemplatePart(Name = FileListPartName, Type = typeof(ItemsControl))]
+    [TemplatePart(Name = ResultTextPartName, Type = typeof(TextBlock))]
     public class Keyring : Control
     {
         /// <summary>
-        /// The Files dependency property.
+        /// Identifier of the Input routed event.
         /// </summary>
-        public static readonly DependencyProperty FilesProperty =
-            DependencyProperty.Register(
-                "Files",
-                typeof(ObservableCollection<FileInfo>),
-                typeof(Keyring));
-
-        /// <summary>
-        /// The ResultChanged routed event identifier.
-        /// </summary>
-        public static readonly RoutedEvent ResultChangedEvent =
+        public static readonly RoutedEvent InputEvent =
             EventManager.RegisterRoutedEvent(
-                "ResultChanged",
+                "Input",
                 RoutingStrategy.Direct,
-                typeof(KeyringResultEventHandler),
+                typeof(RoutedEventHandler),
                 typeof(Keyring));
 
-        private static readonly DependencyPropertyKey ResultPropertyKey =
-            DependencyProperty.RegisterReadOnly(
-                "Result",
-                typeof(string),
-                typeof(Keyring),
-                new PropertyMetadata());
-
-        /// <summary>
-        /// The Result dependency property.
-        /// </summary>
-        [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1202", Justification = "WPF Framework")]
-        public static readonly DependencyProperty ResultProperty = ResultPropertyKey.DependencyProperty;
-
-        private static readonly string PasswordPartName = "PART_Password";
+        private const string PasswordPartName = "PART_Password";
+        private const string FileListPartName = "PART_FileList";
+        private const string ResultTextPartName = "PART_ResultText";
 
         private PasswordBox passwordBox;
+        private TextBlock resultTextBlock;
+        private ItemsControl fileListControl;
+        private byte[] resultBytes;
 
         static Keyring()
         {
@@ -77,30 +61,32 @@ namespace WpfLibrary.ControlSet
         }
 
         /// <summary>
-        /// The ResultChanged event.
+        /// Fired when input is changed.
         /// </summary>
-        public event KeyringResultEventHandler ResultChanged
+        public event RoutedEventHandler Input
         {
-            add { this.AddHandler(ResultChangedEvent, value); }
-            remove { this.RemoveHandler(ResultChangedEvent, value); }
+            add { this.AddHandler(InputEvent, value); }
+            remove { this.RemoveHandler(InputEvent, value); }
+        }
+
+        /// <summary>
+        /// Gets the result bytes.
+        /// </summary>
+        public byte[] ResultBytes
+        {
+            get => this.resultBytes;
+            private set
+            {
+                this.resultBytes = value;
+                this.Result = value?.AsString(ByteCodec.Base64);
+                this.resultTextBlock.Text = $"Checksum: {this.Result}";
+            }
         }
 
         /// <summary>
         /// Gets the result.
         /// </summary>
-        public string Result
-        {
-            get => (string)this.GetValue(ResultProperty);
-            private set => this.SetValue(ResultPropertyKey, value);
-        }
-
-        /// <summary>
-        /// Gets the files.
-        /// </summary>
-        public ObservableCollection<FileInfo> Files
-        {
-            get => (ObservableCollection<FileInfo>)this.GetValue(FilesProperty);
-        }
+        public string Result { get; private set; }
 
         /// <summary>
         /// Gets or sets the password box.
@@ -112,14 +98,14 @@ namespace WpfLibrary.ControlSet
             {
                 if (this.passwordBox != null)
                 {
-                    this.passwordBox.PasswordChanged -= this.InputChanged;
+                    this.passwordBox.PasswordChanged -= this.InputChangedInternal;
                 }
 
                 this.passwordBox = value;
 
                 if (this.passwordBox != null)
                 {
-                    this.passwordBox.PasswordChanged += this.InputChanged;
+                    this.passwordBox.PasswordChanged += this.InputChangedInternal;
                 }
             }
         }
@@ -129,12 +115,8 @@ namespace WpfLibrary.ControlSet
         {
             base.OnApplyTemplate();
 
-            if (this.Files == null)
-            {
-                this.SetValue(FilesProperty, new ObservableCollection<FileInfo>());
-                this.Files.CollectionChanged += this.InputChanged;
-            }
-
+            this.resultTextBlock = this.GetTemplateChild(ResultTextPartName) as TextBlock;
+            this.fileListControl = this.GetTemplateChild(FileListPartName) as ItemsControl;
             this.PasswordBox = this.GetTemplateChild(PasswordPartName) as PasswordBox;
 
             this.UpdateResult();
@@ -152,8 +134,10 @@ namespace WpfLibrary.ControlSet
             {
                 foreach (var fileName in openFileDialog.FileNames)
                 {
-                    this.Files.Add(new FileInfo(fileName));
+                    this.fileListControl.Items.Add(new FileInfo(fileName));
                 }
+
+                this.InputChangedInternal(this.fileListControl, EventArgs.Empty);
             }
         }
 
@@ -161,20 +145,22 @@ namespace WpfLibrary.ControlSet
         {
             if (args.Parameter is FileInfo fi)
             {
-                this.Files.Remove(fi);
+                this.fileListControl.Items.Remove(fi);
+                this.InputChangedInternal(this.fileListControl, EventArgs.Empty);
             }
         }
 
-        private void InputChanged(object sender, EventArgs e)
+        private void InputChangedInternal(object sender, EventArgs e)
         {
-            var bytes = this.UpdateResult();
-            this.RaiseEvent(new KeyringResultEventArgs(ResultChangedEvent, bytes));
+            this.UpdateResult();
+            this.RaiseEvent(new RoutedEventArgs(InputEvent));
         }
 
-        private byte[] UpdateResult()
+        private void UpdateResult()
         {
             var seed = this.PasswordBox.Password;
-            var hexHashes = this.Files
+            var hexHashes = this.fileListControl.Items
+                .OfType<FileInfo>()
                 .Where(fi => fi.Length != 0)
                 .Select(fi => fi.LightHash(HashAlgo.Sha1).AsString(ByteCodec.Hex))
                 .OrderBy(s => s);
@@ -187,10 +173,7 @@ namespace WpfLibrary.ControlSet
                     .AsString(ByteCodec.Base64);
             }
 
-            var resultBytes = seed.AsBytes(CharCodec.Utf8).Hash(HashAlgo.Md5);
-            this.Result = resultBytes.AsString(ByteCodec.Base64);
-
-            return resultBytes;
+            this.ResultBytes = seed.AsBytes(CharCodec.Utf8).Hash(HashAlgo.Md5);
         }
     }
 }

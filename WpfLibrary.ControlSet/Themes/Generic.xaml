@@ -24,7 +24,7 @@
                                 </Grid.ColumnDefinitions>
                                 <PasswordBox x:Name="PART_Password"/>
                                 <TextBlock Grid.Column="1" Padding="5 0 5 2" VerticalAlignment="Center">
-                                    <Run Text="{Binding Items.Count, ElementName=FileList, Mode=OneWay}"/>
+                                    <Run Text="{Binding Items.Count, ElementName=PART_FileList, Mode=OneWay}"/>
                                 </TextBlock>
                                 <Button Grid.Column="2" Command="local:KeyringCommands.PickFilesCommand">
                                     <TextBlock Text="+"
@@ -36,8 +36,7 @@
                                 </Button>
                             </Grid>
                             <ScrollViewer Grid.Row="1" MaxHeight="85" VerticalScrollBarVisibility="Auto">
-                                <ItemsControl x:Name="FileList" AlternationCount="2"
-                                              ItemsSource="{TemplateBinding Files}">
+                                <ItemsControl x:Name="PART_FileList" AlternationCount="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid x:Name="Grid" VerticalAlignment="Center">
@@ -79,12 +78,24 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
-                            <TextBlock Grid.Row="2"
+                            <TextBlock x:Name="PART_ResultText"
+                                       Grid.Row="2"
                                        FontFamily="Consolas"
-                                       HorizontalAlignment="Center">
-                                Checksum: <Run Text="{TemplateBinding Result}"/>
-                            </TextBlock>
+                                       HorizontalAlignment="Center"/>
                         </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:MediaBrowser}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:MediaBrowser}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

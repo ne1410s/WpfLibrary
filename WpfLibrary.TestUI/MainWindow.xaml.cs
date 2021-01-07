@@ -20,8 +20,9 @@ namespace WpfLibrary.TestUI
             this.InitializeComponent();
         }
 
-        private void Keyring_ResultChanged(object sender, KeyringResultEventArgs args)
+        private void Keyring_Input(object sender, RoutedEventArgs e)
         {
+            var x = (sender as Keyring)?.ResultBytes;
         }
     }
 }

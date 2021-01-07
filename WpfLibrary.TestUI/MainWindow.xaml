@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:controls="clr-namespace:WpfLibrary.ControlSet;assembly=WpfLibrary.ControlSet"
-        Title="MainWindow" Height="170" Width="300">
+        Title="MainWindow" Height="500" Width="600">
     <Grid>
-        <controls:Keyring ResultChanged="Keyring_ResultChanged" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        
+        <controls:MediaBrowser Grid.ColumnSpan="2"/>
+        <controls:Keyring Grid.Row="1" Grid.Column="1" Input="Keyring_Input"/>
     </Grid>
 </Window>
