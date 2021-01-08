@@ -32,6 +32,20 @@ namespace WpfLibrary.ControlSet
                 typeof(RoutedEventHandler),
                 typeof(Keyring));
 
+        /// <summary>
+        /// Dependency backing for <see cref="MaxScrollHeight"/>.
+        /// </summary>
+        public static readonly DependencyProperty MaxScrollHeightProperty =
+            DependencyProperty.Register(
+                "MaxScrollHeight",
+                typeof(double),
+                typeof(Keyring),
+                new PropertyMetadata
+                {
+                    DefaultValue = 42d,
+                    CoerceValueCallback = (depObj, value) => Math.Max(value as double? ?? 0, 0d),
+                });
+
         private const string PasswordPartName = "PART_Password";
         private const string FileListPartName = "PART_FileList";
         private const string ResultTextPartName = "PART_ResultText";
@@ -57,6 +71,7 @@ namespace WpfLibrary.ControlSet
             {
                 new CommandBinding(KeyringCommands.PickFilesCommand, this.PickFilesCommandExec),
                 new CommandBinding(KeyringCommands.RemoveFileCommand, this.RemoveFileCommandExec),
+                new CommandBinding(KeyringCommands.ClearFilesCommand, this.ClearFilesCommandExec),
             });
         }
 
@@ -67,6 +82,15 @@ namespace WpfLibrary.ControlSet
         {
             add { this.AddHandler(InputEvent, value); }
             remove { this.RemoveHandler(InputEvent, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum scroll height (for the key file list).
+        /// </summary>
+        public double MaxScrollHeight
+        {
+            get => (double)this.GetValue(MaxScrollHeightProperty);
+            set => this.SetValue(MaxScrollHeightProperty, value);
         }
 
         /// <summary>
@@ -148,6 +172,12 @@ namespace WpfLibrary.ControlSet
                 this.fileListControl.Items.Remove(fi);
                 this.InputChangedInternal(this.fileListControl, EventArgs.Empty);
             }
+        }
+
+        private void ClearFilesCommandExec(object sender, ExecutedRoutedEventArgs args)
+        {
+            this.fileListControl.Items.Clear();
+            this.InputChangedInternal(this.fileListControl, EventArgs.Empty);
         }
 
         private void InputChangedInternal(object sender, EventArgs e)

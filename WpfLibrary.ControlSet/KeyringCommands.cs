@@ -23,5 +23,10 @@ namespace WpfLibrary.ControlSet
         /// Gets the remove file command.
         /// </summary>
         public static RoutedCommand RemoveFileCommand { get; } = new RoutedCommand();
+
+        /// <summary>
+        /// Gets the clear files command.
+        /// </summary>
+        public static RoutedCommand ClearFilesCommand { get; } = new RoutedCommand();
     }
 }

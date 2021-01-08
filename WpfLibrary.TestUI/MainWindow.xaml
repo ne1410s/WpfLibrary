@@ -9,14 +9,14 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="230"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        
-        <controls:MediaBrowser Grid.ColumnSpan="2"/>
-        <controls:Keyring Grid.Row="1" Grid.Column="1" Input="Keyring_Input"/>
+
+        <controls:MediaGallery Grid.ColumnSpan="2"/>
+        <controls:Keyring Grid.Row="1" Grid.Column="1" MaxScrollHeight="0" Input="Keyring_Input"/>
     </Grid>
 </Window>

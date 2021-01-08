@@ -21,6 +21,7 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
                                 <PasswordBox x:Name="PART_Password"/>
                                 <TextBlock Grid.Column="1" Padding="5 0 5 2" VerticalAlignment="Center">
@@ -34,33 +35,42 @@
                                                Foreground="Green"
                                                Background="#64ffffff"/>
                                 </Button>
+                                <Button Grid.Column="3" Command="local:KeyringCommands.ClearFilesCommand">
+                                    <TextBlock Text="x"
+                                               Cursor="Hand"
+                                               Padding="5 0 5 3"
+                                               FontWeight="Bold"
+                                               Foreground="Red"
+                                               Background="#64ffffff"/>
+                                </Button>
                             </Grid>
-                            <ScrollViewer Grid.Row="1" MaxHeight="85" VerticalScrollBarVisibility="Auto">
+
+                            <ScrollViewer Grid.Row="1" MaxHeight="{TemplateBinding MaxScrollHeight}" VerticalScrollBarVisibility="Auto">
                                 <ItemsControl x:Name="PART_FileList" AlternationCount="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid x:Name="Grid" VerticalAlignment="Center">
                                                 <Grid.InputBindings>
                                                     <MouseBinding Gesture="RightClick"
-                                                                  Command="local:KeyringCommands.RemoveFileCommand"
-                                                                  CommandParameter="{Binding}"/>
+                                                                Command="local:KeyringCommands.RemoveFileCommand"
+                                                                CommandParameter="{Binding}"/>
                                                 </Grid.InputBindings>
-                                                
+
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition Width="auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Name}"/>
                                                 <Button Grid.Column="1"
-                                                        BorderThickness="0"
-                                                        Command="local:KeyringCommands.RemoveFileCommand"
-                                                        CommandParameter="{Binding}">
+                                                    BorderThickness="0"
+                                                    Command="local:KeyringCommands.RemoveFileCommand"
+                                                    CommandParameter="{Binding}">
                                                     <TextBlock Text="x"
-                                                               Cursor="Hand"
-                                                               Padding="5 0 5 3"
-                                                               FontWeight="Bold"
-                                                               Foreground="Red"
-                                                               Background="#64ffffff"/>
+                                                            Cursor="Hand"
+                                                            Padding="5 0 5 3"
+                                                            FontWeight="Bold"
+                                                            Foreground="Red"
+                                                            Background="#64ffffff"/>
                                                 </Button>
                                             </Grid>
                                             <DataTemplate.Triggers>
@@ -89,13 +99,31 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type local:MediaBrowser}">
+    <Style TargetType="{x:Type local:MediaGallery}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:MediaBrowser}">
+                <ControlTemplate TargetType="{x:Type local:MediaGallery}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <ListView x:Name="PART_FileList"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock/>
+                                        <Grid Background="Gray" Height="50" Width="50"/>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

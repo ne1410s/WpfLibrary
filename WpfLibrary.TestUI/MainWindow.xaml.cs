@@ -22,7 +22,6 @@ namespace WpfLibrary.TestUI
 
         private void Keyring_Input(object sender, RoutedEventArgs e)
         {
-            var x = (sender as Keyring)?.ResultBytes;
         }
     }
 }
