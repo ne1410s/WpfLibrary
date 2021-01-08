@@ -8,14 +8,26 @@ namespace WpfLibrary.ControlSet
     using System.IO;
     using System.Windows;
     using System.Windows.Controls;
-    using WpfLibrary.ControlSet.Models;
+    using System.Windows.Input;
+    using SecureMedia.Core.Extensions;
+    using Forms = System.Windows.Forms;
 
     /// <summary>
-    /// A media browser.
+    /// A media gallery.
     /// </summary>
-    [TemplatePart(Name = FileListPartName, Type = typeof(ListView))]
+    [TemplatePart(Name = FileListPartName, Type = typeof(MediaGallery))]
     public class MediaGallery : Control
     {
+        /// <summary>
+        /// Dependency backing for <see cref="Secret"/>.
+        /// </summary>
+        public static readonly DependencyProperty SecretProperty =
+            DependencyProperty.Register(
+                "Secret",
+                typeof(byte[]),
+                typeof(MediaGallery),
+                new PropertyMetadata(Array.Empty<byte>()));
+
         private const string FileListPartName = "PART_FileList";
 
         private ListView fileListControl;
@@ -28,25 +40,24 @@ namespace WpfLibrary.ControlSet
         }
 
         /// <summary>
-        /// Gets or sets the file list control.
+        /// Initialises a new instance of the <see cref="MediaGallery"/> class.
         /// </summary>
-        protected ListView FileListControl
+        public MediaGallery()
         {
-            get => this.fileListControl;
-            set
+            this.CommandBindings.AddRange(new[]
             {
-                if (this.fileListControl != null)
-                {
-                    this.fileListControl.SelectionChanged -= this.SelectionChangedInternal;
-                }
+                new CommandBinding(MediaGalleryCommands.OpenMediaCommand, this.OpenMediaCommandExec),
+                new CommandBinding(MediaGalleryCommands.BrowseFilesCommand, this.BrowseFilesCommandExec),
+            });
+        }
 
-                this.fileListControl = value;
-
-                if (this.fileListControl != null)
-                {
-                    this.fileListControl.SelectionChanged += this.SelectionChangedInternal;
-                }
-            }
+        /// <summary>
+        /// Gets or sets the secret.
+        /// </summary>
+        public byte[] Secret
+        {
+            get => (byte[])this.GetValue(SecretProperty);
+            set => this.SetValue(SecretProperty, value);
         }
 
         /// <inheritdoc/>
@@ -54,29 +65,26 @@ namespace WpfLibrary.ControlSet
         {
             base.OnApplyTemplate();
 
-            this.FileListControl = this.GetTemplateChild(FileListPartName) as ListView;
-
-            this.PopulateFiles();
+            this.fileListControl = this.GetTemplateChild(FileListPartName) as ListView;
         }
 
-        private void SelectionChangedInternal(object sender, SelectionChangedEventArgs e)
+        private void OpenMediaCommandExec(object sender, ExecutedRoutedEventArgs e)
         {
+            // TODO
         }
 
-        private void PopulateFiles()
+        private void BrowseFilesCommandExec(object sender, ExecutedRoutedEventArgs e)
         {
-            this.FileListControl.Items.Clear();
-            foreach (var fi in new DirectoryInfo(@"c:\temp\keys").GetFiles())
+            var folderBrowserDialog = new Forms.FolderBrowserDialog
             {
-                var item = new MediaGalleryItem
-                {
-                    Id = Guid.NewGuid(),
-                    Name = fi.Name,
-                    FileSize = fi.Length,
-                    Type = MediaType.Image,
-                };
+                RootFolder = Environment.SpecialFolder.MyDocuments,
+            };
 
-                this.FileListControl.Items.Add(item);
+            if (folderBrowserDialog.ShowDialog() == Forms.DialogResult.OK)
+            {
+                this.fileListControl.Items.Clear();
+                new DirectoryInfo(folderBrowserDialog.SelectedPath).Walk(
+                    media => this.fileListControl.Items.Add(media), null, 100);
             }
         }
     }

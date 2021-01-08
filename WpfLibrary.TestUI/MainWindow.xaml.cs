@@ -5,7 +5,6 @@
 namespace WpfLibrary.TestUI
 {
     using System.Windows;
-    using WpfLibrary.ControlSet;
 
     /// <summary>
     /// The main window.
@@ -18,10 +17,6 @@ namespace WpfLibrary.TestUI
         public MainWindow()
         {
             this.InitializeComponent();
-        }
-
-        private void Keyring_Input(object sender, RoutedEventArgs e)
-        {
         }
     }
 }

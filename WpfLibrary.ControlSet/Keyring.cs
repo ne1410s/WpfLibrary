@@ -40,11 +40,17 @@ namespace WpfLibrary.ControlSet
                 "MaxScrollHeight",
                 typeof(double),
                 typeof(Keyring),
-                new PropertyMetadata
-                {
-                    DefaultValue = 42d,
-                    CoerceValueCallback = (depObj, value) => Math.Max(value as double? ?? 0, 0d),
-                });
+                new PropertyMetadata(42d));
+
+        /// <summary>
+        /// Dependency backing for <see cref="ResultBytes"/>.
+        /// </summary>
+        public static readonly DependencyProperty ResultBytesProperty =
+            DependencyProperty.Register(
+                "ResultBytes",
+                typeof(byte[]),
+                typeof(Keyring),
+                new PropertyMetadata(Array.Empty<byte>()));
 
         private const string PasswordPartName = "PART_Password";
         private const string FileListPartName = "PART_FileList";
@@ -53,7 +59,6 @@ namespace WpfLibrary.ControlSet
         private PasswordBox passwordBox;
         private TextBlock resultTextBlock;
         private ItemsControl fileListControl;
-        private byte[] resultBytes;
 
         static Keyring()
         {
@@ -98,19 +103,14 @@ namespace WpfLibrary.ControlSet
         /// </summary>
         public byte[] ResultBytes
         {
-            get => this.resultBytes;
-            private set
-            {
-                this.resultBytes = value;
-                this.Result = value?.AsString(ByteCodec.Base64);
-                this.resultTextBlock.Text = $"Checksum: {this.Result}";
-            }
+            get => (byte[])this.GetValue(ResultBytesProperty);
+            private set => this.SetValue(ResultBytesProperty, value);
         }
 
         /// <summary>
         /// Gets the result.
         /// </summary>
-        public string Result { get; private set; }
+        public string Result => this.ResultBytes?.AsString(ByteCodec.Base64);
 
         /// <summary>
         /// Gets or sets the password box.
@@ -204,6 +204,7 @@ namespace WpfLibrary.ControlSet
             }
 
             this.ResultBytes = seed.AsBytes(CharCodec.Utf8).Hash(HashAlgo.Md5);
+            this.resultTextBlock.Text = $"Checksum: {this.Result}";
         }
     }
 }

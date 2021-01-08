@@ -3,9 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
         xmlns:controls="clr-namespace:WpfLibrary.ControlSet;assembly=WpfLibrary.ControlSet"
+        xmlns:local="clr-namespace:WpfLibrary.TestUI"
+        mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="600">
+
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -16,7 +22,11 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <controls:MediaGallery Grid.ColumnSpan="2"/>
-        <controls:Keyring Grid.Row="1" Grid.Column="1" MaxScrollHeight="0" Input="Keyring_Input"/>
+        <controls:MediaGallery Grid.ColumnSpan="2"
+                               Secret="{Binding ResultBytes, ElementName=Keyring}"/>
+        
+        <controls:Keyring x:Name="Keyring"
+                          Grid.Row="1" Grid.Column="1"
+                          MaxScrollHeight="0"/>
     </Grid>
 </Window>

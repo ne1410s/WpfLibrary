@@ -52,8 +52,8 @@
                                             <Grid x:Name="Grid" VerticalAlignment="Center">
                                                 <Grid.InputBindings>
                                                     <MouseBinding Gesture="RightClick"
-                                                                Command="local:KeyringCommands.RemoveFileCommand"
-                                                                CommandParameter="{Binding}"/>
+                                                                  Command="local:KeyringCommands.RemoveFileCommand"
+                                                                  CommandParameter="{Binding}"/>
                                                 </Grid.InputBindings>
 
                                                 <Grid.ColumnDefinitions>
@@ -62,15 +62,15 @@
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Text="{Binding Name}"/>
                                                 <Button Grid.Column="1"
-                                                    BorderThickness="0"
-                                                    Command="local:KeyringCommands.RemoveFileCommand"
-                                                    CommandParameter="{Binding}">
+                                                        BorderThickness="0"
+                                                        Command="local:KeyringCommands.RemoveFileCommand"
+                                                        CommandParameter="{Binding}">
                                                     <TextBlock Text="x"
-                                                            Cursor="Hand"
-                                                            Padding="5 0 5 3"
-                                                            FontWeight="Bold"
-                                                            Foreground="Red"
-                                                            Background="#64ffffff"/>
+                                                               Cursor="Hand"
+                                                               Padding="5 0 5 3"
+                                                               FontWeight="Bold"
+                                                               Foreground="Red"
+                                                               Background="#64ffffff"/>
                                                 </Button>
                                             </Grid>
                                             <DataTemplate.Triggers>
@@ -106,24 +106,43 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-
-                        <ListView x:Name="PART_FileList"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel/>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel>
-                                        <TextBlock/>
-                                        <Grid Background="Gray" Height="50" Width="50"/>
-                                        <TextBlock Text="{Binding Name}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ListView x:Name="PART_FileList"
+                                      BorderThickness="0"
+                                      HorizontalAlignment="Center"
+                                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <StackPanel.InputBindings>
+                                                <MouseBinding Gesture="LeftDoubleClick"
+                                                              Command="local:MediaGalleryCommands.OpenMediaCommand"
+                                                              CommandParameter="{Binding}"/>
+                                            </StackPanel.InputBindings>
+                                            <TextBlock/>
+                                            <Grid Background="Gray" Height="50"/>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <GridSplitter Cursor="SizeWE" Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
+                            <Grid Grid.Column="2">
+                                <Button Content="Browse..." VerticalAlignment="Top"
+                                        Command="local:MediaGalleryCommands.BrowseFilesCommand"/>
+                            </Grid>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
