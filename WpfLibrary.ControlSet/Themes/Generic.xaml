@@ -131,7 +131,7 @@
                                                               CommandParameter="{Binding}"/>
                                             </StackPanel.InputBindings>
                                             <TextBlock/>
-                                            <Grid Background="Gray" Height="50"/>
+                                            <Image Source="{Binding ThumbSource}" Height="100"/>
                                             <TextBlock Text="{Binding Name}"/>
                                         </StackPanel>
                                     </DataTemplate>

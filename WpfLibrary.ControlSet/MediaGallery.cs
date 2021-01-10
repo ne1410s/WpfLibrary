@@ -10,6 +10,8 @@ namespace WpfLibrary.ControlSet
     using System.Windows.Controls;
     using System.Windows.Input;
     using SecureMedia.Core.Extensions;
+    using SecureMedia.Core.Models;
+    using WpfLibrary.ControlSet.Models;
     using Forms = System.Windows.Forms;
 
     /// <summary>
@@ -66,6 +68,10 @@ namespace WpfLibrary.ControlSet
             base.OnApplyTemplate();
 
             this.fileListControl = this.GetTemplateChild(FileListPartName) as ListView;
+
+            // demo!
+            var di = new DirectoryInfo(@"c:\temp\img");
+            //di.WalkMedia
         }
 
         private void OpenMediaCommandExec(object sender, ExecutedRoutedEventArgs e)
@@ -75,17 +81,23 @@ namespace WpfLibrary.ControlSet
 
         private void BrowseFilesCommandExec(object sender, ExecutedRoutedEventArgs e)
         {
-            var folderBrowserDialog = new Forms.FolderBrowserDialog
+            var dialog = new Forms.FolderBrowserDialog
             {
                 RootFolder = Environment.SpecialFolder.MyDocuments,
             };
 
-            if (folderBrowserDialog.ShowDialog() == Forms.DialogResult.OK)
+            if (dialog.ShowDialog() == Forms.DialogResult.OK)
             {
+                var genParams = new ThumbGenParams { Pass = this.Secret };
                 this.fileListControl.Items.Clear();
-                new DirectoryInfo(folderBrowserDialog.SelectedPath).Walk(
-                    media => this.fileListControl.Items.Add(media), null, 100);
+                dialog.SelectedPath.WalkMedia(this.MediaFound, genParams);
             }
+        }
+
+        private void MediaFound(MediaInfo media)
+        {
+            var galleryItem = new MediaGalleryItem(media);
+            this.fileListControl.Items.Add(galleryItem);
         }
     }
 }
