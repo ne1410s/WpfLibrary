@@ -79,7 +79,7 @@ namespace WpfLibrary.ControlSet
             // TODO
         }
 
-        private void BrowseFilesCommandExec(object sender, ExecutedRoutedEventArgs e)
+        private async void BrowseFilesCommandExec(object sender, ExecutedRoutedEventArgs e)
         {
             var dialog = new Forms.FolderBrowserDialog
             {
@@ -90,17 +90,15 @@ namespace WpfLibrary.ControlSet
             {
                 var secret = this.Secret;
                 this.fileListControl.Items.Clear();
-                this.Dispatcher.Invoke(async () =>
+
+                foreach (var media in dialog.SelectedPath.ListMedia())
                 {
-                    foreach (var media in dialog.SelectedPath.ListMedia())
-                    {
-                        var item = new MediaGalleryItem(media);
-                        var bitmap = item.GetPreview(100, secret);
-                        item.ThumbSource = bitmap.ToSource();
-                        this.fileListControl.Items.Add(item);
-                        await Task.Delay(1);
-                    }
-                });
+                    var item = new MediaGalleryItem(media);
+                    var bitmap = item.GetPreview(100, secret);
+                    item.ThumbSource = bitmap.ToSource();
+                    this.fileListControl.Items.Add(item);
+                    await Task.Delay(1);
+                }
             }
         }
     }
