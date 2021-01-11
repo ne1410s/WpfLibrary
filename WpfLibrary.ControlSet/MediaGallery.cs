@@ -94,7 +94,7 @@ namespace WpfLibrary.ControlSet
                 foreach (var media in dialog.SelectedPath.ListMedia())
                 {
                     var item = new MediaGalleryItem(media);
-                    var bitmap = item.GetPreview(100, secret);
+                    using var bitmap = item.GetPreview(100, secret);
                     item.ThumbSource = bitmap.ToSource();
                     this.fileListControl.Items.Add(item);
                     await Task.Delay(1);

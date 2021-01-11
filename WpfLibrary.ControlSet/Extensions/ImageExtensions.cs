@@ -21,16 +21,21 @@ namespace WpfLibrary.ControlSet.Extensions
         /// <returns>A bindable image.</returns>
         internal static BitmapImage ToSource(this Bitmap bitmap)
         {
-            using var memStream = new MemoryStream();
-            bitmap.Save(memStream, ImageFormat.Jpeg);
-            memStream.Position = 0;
+            var image = (BitmapImage)null;
+            if (bitmap != null)
+            {
+                using var memStream = new MemoryStream();
+                bitmap.Save(memStream, ImageFormat.Jpeg);
+                memStream.Position = 0;
 
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.StreamSource = memStream;
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.EndInit();
-            image.Freeze();
+                image = new BitmapImage();
+                image.BeginInit();
+                image.StreamSource = memStream;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.EndInit();
+                image.Freeze();
+            }
+
             return image;
         }
     }
