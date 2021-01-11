@@ -4,6 +4,7 @@
 
 namespace WpfLibrary.ControlSet.Models
 {
+    using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
     using System.Windows.Media.Imaging;
@@ -21,37 +22,17 @@ namespace WpfLibrary.ControlSet.Models
         /// <param name="media">A media item.</param>
         public MediaGalleryItem(MediaInfo media)
         {
-            this.Id = media.Id;
+            this.Salt = media.Salt;
             this.Name = media.Name;
             this.Type = media.Type;
             this.Path = media.Path;
             this.FileSize = media.FileSize;
             this.Secure = media.Secure;
-            this.Thumb = media.Thumb;
-
-            this.ReadThumbSource();
         }
 
         /// <summary>
-        /// Gets a bindable source for the thumbnail.
+        /// Gets or sets a bindable source for the thumbnail.
         /// </summary>
-        public BitmapImage ThumbSource { get; private set; }
-
-        private void ReadThumbSource()
-        {
-            if (this.Thumb != null && this.ThumbSource == null)
-            {
-                using var memStream = new MemoryStream();
-                this.Thumb.Save(memStream, ImageFormat.Png);
-                memStream.Position = 0;
-
-                this.ThumbSource = new BitmapImage();
-                this.ThumbSource.BeginInit();
-                this.ThumbSource.StreamSource = memStream;
-                this.ThumbSource.CacheOption = BitmapCacheOption.OnLoad;
-                this.ThumbSource.EndInit();
-                this.ThumbSource.Freeze();
-            }
-        }
+        public BitmapImage ThumbSource { get; set; }
     }
 }

@@ -5,12 +5,17 @@
 namespace WpfLibrary.ControlSet
 {
     using System;
+    using System.ComponentModel;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Media.Imaging;
     using SecureMedia.Core.Extensions;
     using SecureMedia.Core.Models;
+    using WpfLibrary.ControlSet.Extensions;
     using WpfLibrary.ControlSet.Models;
     using Forms = System.Windows.Forms;
 
@@ -66,12 +71,7 @@ namespace WpfLibrary.ControlSet
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             this.fileListControl = this.GetTemplateChild(FileListPartName) as ListView;
-
-            // demo!
-            var di = new DirectoryInfo(@"c:\temp\img");
-            //di.WalkMedia
         }
 
         private void OpenMediaCommandExec(object sender, ExecutedRoutedEventArgs e)
@@ -88,16 +88,20 @@ namespace WpfLibrary.ControlSet
 
             if (dialog.ShowDialog() == Forms.DialogResult.OK)
             {
-                var genParams = new ThumbGenParams { Pass = this.Secret };
+                var secret = this.Secret;
                 this.fileListControl.Items.Clear();
-                dialog.SelectedPath.WalkMedia(this.MediaFound, genParams);
+                this.Dispatcher.Invoke(async () =>
+                {
+                    foreach (var media in dialog.SelectedPath.ListMedia())
+                    {
+                        var item = new MediaGalleryItem(media);
+                        var bitmap = item.GetPreview(100, secret);
+                        item.ThumbSource = bitmap.ToSource();
+                        this.fileListControl.Items.Add(item);
+                        await Task.Delay(1);
+                    }
+                });
             }
-        }
-
-        private void MediaFound(MediaInfo media)
-        {
-            var galleryItem = new MediaGalleryItem(media);
-            this.fileListControl.Items.Add(galleryItem);
         }
     }
 }
