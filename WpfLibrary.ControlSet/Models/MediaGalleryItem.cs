@@ -4,16 +4,13 @@
 
 namespace WpfLibrary.ControlSet.Models
 {
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.IO;
     using System.Windows.Media.Imaging;
     using SecureMedia.Core.Models;
 
     /// <summary>
     /// Item for media.
     /// </summary>
-    internal class MediaGalleryItem : MediaInfo
+    public class MediaGalleryItem : MediaInfo
     {
         /// <summary>
         /// Initialises a new instance of the <see cref="MediaGalleryItem"/>
@@ -34,5 +31,10 @@ namespace WpfLibrary.ControlSet.Models
         /// Gets or sets a bindable source for the thumbnail.
         /// </summary>
         public BitmapImage ThumbSource { get; set; }
+
+        /// <summary>
+        /// Gets or sets the secret.
+        /// </summary>
+        public byte[] Secret { get; set; }
     }
 }

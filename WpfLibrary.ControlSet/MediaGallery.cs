@@ -5,16 +5,11 @@
 namespace WpfLibrary.ControlSet
 {
     using System;
-    using System.ComponentModel;
-    using System.IO;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
-    using System.Windows.Media.Imaging;
     using SecureMedia.Core.Extensions;
-    using SecureMedia.Core.Models;
     using WpfLibrary.ControlSet.Extensions;
     using WpfLibrary.ControlSet.Models;
     using Forms = System.Windows.Forms;
@@ -23,7 +18,7 @@ namespace WpfLibrary.ControlSet
     /// A media gallery.
     /// </summary>
     [TemplatePart(Name = FileListPartName, Type = typeof(MediaGallery))]
-    public class MediaGallery : Control
+    public class MediaGallery : Control, ICommandSource
     {
         /// <summary>
         /// Dependency backing for <see cref="Secret"/>.
@@ -34,6 +29,16 @@ namespace WpfLibrary.ControlSet
                 typeof(byte[]),
                 typeof(MediaGallery),
                 new PropertyMetadata(Array.Empty<byte>()));
+
+        /// <summary>
+        /// Dependency backing for <see cref="Command"/>.
+        /// </summary>
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register(
+                "Command",
+                typeof(ICommand),
+                typeof(MediaGallery),
+                new PropertyMetadata(null));
 
         private const string FileListPartName = "PART_FileList";
 
@@ -68,15 +73,39 @@ namespace WpfLibrary.ControlSet
         }
 
         /// <inheritdoc/>
-        public override void OnApplyTemplate()
+        public ICommand Command
+        {
+            get => (ICommand)this.GetValue(CommandProperty);
+            set => this.SetValue(CommandProperty, value);
+        }
+
+        /// <inheritdoc/>
+        public object CommandParameter
+        {
+            get
+            {
+                var media = (MediaGalleryItem)this.fileListControl.SelectedItem;
+                media.Secret = this.Secret;
+                return media;
+            }
+        }
+
+        /// <inheritdoc/>
+        public IInputElement CommandTarget => throw new NotImplementedException();
+
+        /// <inheritdoc/>
+        public override async void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             this.fileListControl = this.GetTemplateChild(FileListPartName) as ListView;
+
+            // DEMO!
+            await this.AddMedia(@"c:\temp\keys");
         }
 
         private void OpenMediaCommandExec(object sender, ExecutedRoutedEventArgs e)
         {
-            // TODO
+            this.Command?.Execute(this.CommandParameter);
         }
 
         private async void BrowseFilesCommandExec(object sender, ExecutedRoutedEventArgs e)
@@ -88,17 +117,21 @@ namespace WpfLibrary.ControlSet
 
             if (dialog.ShowDialog() == Forms.DialogResult.OK)
             {
-                var secret = this.Secret;
                 this.fileListControl.Items.Clear();
+                await this.AddMedia(dialog.SelectedPath);
+            }
+        }
 
-                foreach (var media in dialog.SelectedPath.ListMedia())
-                {
-                    var item = new MediaGalleryItem(media);
-                    using var bitmap = item.GetPreview(100, secret);
-                    item.ThumbSource = bitmap.ToSource();
-                    this.fileListControl.Items.Add(item);
-                    await Task.Delay(1);
-                }
+        private async Task AddMedia(string directory)
+        {
+            var secret = this.Secret;
+            foreach (var media in directory.ListMedia())
+            {
+                var item = new MediaGalleryItem(media);
+                using var bitmap = item.GetPreview(100, secret);
+                item.ThumbSource = bitmap.ToSource();
+                this.fileListControl.Items.Add(item);
+                await Task.Delay(1);
             }
         }
     }

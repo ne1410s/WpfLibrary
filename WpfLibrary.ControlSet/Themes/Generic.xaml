@@ -103,8 +103,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:MediaGallery}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -112,37 +111,75 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="PART_FileList"
+                            <Grid Background="{TemplateBinding Background}">
+                                <ListView x:Name="PART_FileList"
+                                      Background="Transparent"
                                       BorderThickness="0"
                                       HorizontalAlignment="Center"
                                       ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <ListView.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel/>
-                                    </ItemsPanelTemplate>
-                                </ListView.ItemsPanel>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <StackPanel.InputBindings>
-                                                <MouseBinding Gesture="LeftDoubleClick"
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Width="150"
+                                                        Margin="0 2"
+                                                        Background="#BBFFFFFF">
+                                                <StackPanel.InputBindings>
+                                                    <MouseBinding Gesture="LeftDoubleClick"
                                                               Command="local:MediaGalleryCommands.OpenMediaCommand"
                                                               CommandParameter="{Binding}"/>
-                                            </StackPanel.InputBindings>
-                                            <TextBlock/>
-                                            <Image Source="{Binding ThumbSource}" Height="100"/>
-                                            <TextBlock Text="{Binding Name}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                                                </StackPanel.InputBindings>
+                                                <Image Source="{Binding ThumbSource}"
+                                                       VerticalAlignment="Bottom"
+                                                       Height="100"
+                                                       Margin="10 10 10 0"/>
+                                                <TextBlock Text="{Binding Name}"
+                                                           Padding="5 2"
+                                                           HorizontalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
                             <GridSplitter Cursor="SizeWE" Grid.Column="1" Width="5" HorizontalAlignment="Center"/>
                             <Grid Grid.Column="2">
                                 <Button Content="Browse..." VerticalAlignment="Top"
                                         Command="local:MediaGalleryCommands.BrowseFilesCommand"/>
                             </Grid>
                         </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:FluidImage}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:FluidImage}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <TextBlock Text="FluidImage"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:FluidVideo}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:FluidVideo}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <TextBlock Text="FluidVideo"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
