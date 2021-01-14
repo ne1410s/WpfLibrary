@@ -3,10 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:WpfLibrary.ControlSet;assembly=WpfLibrary.ControlSet"
         xmlns:local="clr-namespace:WpfLibrary.TestUI"
         mc:Ignorable="d"
         Title="MediaWindow" Height="450" Width="800">
+
+    <Window.DataContext>
+        <local:MediaWindowViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <local:StringMatchVisibilityConverter x:Key="StringMatchVisibilityConverter"/>
+    </Window.Resources>
+
     <Grid>
-        
+        <controls:FluidImage Media="{Binding Media}" />
+        <controls:FluidVideo Media="{Binding Media}"/>
     </Grid>
 </Window>

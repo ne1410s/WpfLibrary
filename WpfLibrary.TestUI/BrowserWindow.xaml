@@ -24,7 +24,7 @@
 
         <controls:MediaGallery Grid.ColumnSpan="2"
                                Background="DarkSlateGray"
-                               Command="{Binding TestCommand}"
+                               Command="{Binding OpenMediaCommand}"
                                Secret="{Binding ResultBytes, ElementName=Keyring}"/>
         
         <controls:Keyring x:Name="Keyring"

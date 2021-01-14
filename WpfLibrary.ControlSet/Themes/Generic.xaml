@@ -165,7 +165,10 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <TextBlock Text="FluidImage"/>
+                        <StackPanel>
+                            <TextBlock Text="Image!"/>
+                            <TextBlock Text="{Binding Media.Name, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -179,7 +182,10 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <TextBlock Text="FluidVideo"/>
+                        <StackPanel>
+                            <TextBlock Text="Video!"/>
+                            <TextBlock Text="{Binding Media.Name, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
