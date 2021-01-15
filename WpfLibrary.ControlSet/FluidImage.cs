@@ -7,21 +7,17 @@ namespace WpfLibrary.ControlSet
     using System.Windows;
     using System.Windows.Controls;
     using SecureMedia.Core.Models;
-    using WpfLibrary.ControlSet.Models;
+    using WpfLibrary.ControlSet.Extensions;
 
     /// <summary>
     /// The fluid image control.
     /// </summary>
-    public class FluidImage : Control
+    [TemplatePart(Name = ImagePartName, Type = typeof(Image))]
+    public class FluidImage : MediaControl
     {
-        /// <summary>
-        /// Dependency backing for <see cref="Media"/>.
-        /// </summary>
-        public static readonly DependencyProperty MediaProperty =
-            DependencyProperty.Register(
-                "Media",
-                typeof(MediaGalleryItem),
-                typeof(FluidImage));
+        private const string ImagePartName = "PART_Image";
+
+        private Image imageControl;
 
         static FluidImage()
         {
@@ -30,25 +26,16 @@ namespace WpfLibrary.ControlSet
                 new FrameworkPropertyMetadata(typeof(FluidImage)));
         }
 
-        /// <summary>
-        /// Gets or sets the media item.
-        /// </summary>
-        public MediaGalleryItem Media
-        {
-            get => (MediaGalleryItem)this.GetValue(MediaProperty);
-            set => this.SetValue(MediaProperty, value);
-        }
+        /// <inheritdoc/>
+        public override MediaType MediaType => MediaType.Image;
 
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (this.Media.Type != MediaType.Image)
-            {
-                this.IsEnabled = false;
-                this.Visibility = Visibility.Hidden;
-            }
+            this.imageControl = this.GetTemplateChild(ImagePartName) as Image;
+            this.imageControl.Source ??= this.Media.ToSource();
         }
     }
 }

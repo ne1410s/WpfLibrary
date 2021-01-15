@@ -17,7 +17,8 @@ namespace WpfLibrary.ControlSet.Models
         /// class.
         /// </summary>
         /// <param name="media">A media item.</param>
-        public MediaGalleryItem(MediaInfo media)
+        /// <param name="secret">Optional secret.</param>
+        public MediaGalleryItem(MediaInfo media, byte[] secret = null)
         {
             this.Salt = media.Salt;
             this.Name = media.Name;
@@ -25,6 +26,7 @@ namespace WpfLibrary.ControlSet.Models
             this.Path = media.Path;
             this.FileSize = media.FileSize;
             this.Secure = media.Secure;
+            this.Secret = secret;
         }
 
         /// <summary>

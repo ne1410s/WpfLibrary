@@ -165,10 +165,9 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <StackPanel>
-                            <TextBlock Text="Image!"/>
-                            <TextBlock Text="{Binding Media.Name, RelativeSource={RelativeSource TemplatedParent}}"/>
-                        </StackPanel>
+                        <Grid>
+                            <Image x:Name="PART_Image"/>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

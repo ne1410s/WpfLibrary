@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:WpfLibrary.ControlSet;assembly=WpfLibrary.ControlSet"
         xmlns:local="clr-namespace:WpfLibrary.TestUI"
         mc:Ignorable="d"
-        Title="MediaWindow" Height="450" Width="800">
+        Title="MediaWindow" Height="1000" Width="1000">
 
     <Window.DataContext>
         <local:MediaWindowViewModel/>

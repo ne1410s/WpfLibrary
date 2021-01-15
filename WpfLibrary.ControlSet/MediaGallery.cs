@@ -40,6 +40,7 @@ namespace WpfLibrary.ControlSet
                 typeof(MediaGallery),
                 new PropertyMetadata(null));
 
+        private const int ThumbnailHeight = 100;
         private const string FileListPartName = "PART_FileList";
 
         private ListView fileListControl;
@@ -127,8 +128,8 @@ namespace WpfLibrary.ControlSet
             var secret = this.Secret;
             foreach (var media in directory.ListMedia())
             {
-                var item = new MediaGalleryItem(media);
-                using var bitmap = item.GetPreview(100, secret);
+                var item = new MediaGalleryItem(media, secret);
+                using var bitmap = item.GetPreview(ThumbnailHeight, item.Secret);
                 item.ThumbSource = bitmap.ToSource();
                 this.fileListControl.Items.Add(item);
                 await Task.Delay(1);
